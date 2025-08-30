@@ -102,7 +102,30 @@
       color:var(--text);
       padding:6px 10px;
       border-radius:10px;
-      cursor:pointer
+      cursor:pointer;
+      font-size: 14px;
+    }
+    .btn{
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:#fff;
+      border:none;
+      padding:12px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700;
+      font-size: 14px;
+    }
+    .btn[disabled]{
+      opacity:.6;
+      cursor:not-allowed
+    }
+    .ghost{
+      background:transparent;
+      border:1px dashed var(--border);
+      color:var(--text)
+    }
+    .download-btn{
+      margin-left:auto
     }
     .theme-toggle{
       display:inline-flex;
@@ -255,27 +278,6 @@
       margin-top:12px;
       align-items:center
     }
-    .btn{
-      background:linear-gradient(135deg,var(--accent),var(--accent-2));
-      color:#fff;
-      border:none;
-      padding:12px 18px;
-      border-radius:12px;
-      cursor:pointer;
-      font-weight:700
-    }
-    .btn[disabled]{
-      opacity:.6;
-      cursor:not-allowed
-    }
-    .ghost{
-      background:transparent;
-      border:1px dashed var(--border);
-      color:var(--text)
-    }
-    .download-btn{
-      margin-left:auto
-    }
     /* Uploader */
     .drop{
       display:flex;
@@ -288,7 +290,8 @@
       border-radius:12px;
       background:color-mix(in srgb,var(--card) 85%, transparent);
       text-align:center;
-      padding:16px
+      padding:16px;
+      position: relative;
     }
     .drop.dragover{
       border-color:var(--accent-2);
@@ -368,6 +371,109 @@
       white-space:nowrap;
       border:0
     }
+    
+    /* Estilos para la vista previa de imagen */
+    .image-preview {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 8px;
+      display: none;
+      margin-bottom: 15px;
+    }
+    
+    /* Progress bar */
+    .progress-bar {
+      width: 100%;
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 10px 0;
+      display: none;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    /* Error message */
+    .error-message {
+      color: #ef4444;
+      font-size: 12px;
+      margin-top: 5px;
+      display: none;
+    }
+    
+    /* Mejoras para móvil */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 32px;
+      }
+      
+      .hero p {
+        font-size: 16px;
+      }
+      
+      .compare {
+        height: 300px;
+      }
+      
+      .drop {
+        min-height: 300px;
+      }
+      
+      .apikey {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .apikey input {
+        width: 150px;
+      }
+      
+      .controls {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .btn, .mini-btn {
+        width: 100%;
+        text-align: center;
+      }
+      
+      .download-btn {
+        margin-left: 0;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .nav {
+        flex-direction: column;
+        height: auto;
+        padding: 10px 0;
+      }
+      
+      .right {
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+      }
+      
+      .hero {
+        padding: 30px 0 20px;
+      }
+      
+      .card {
+        padding: 12px;
+      }
+      
+      .section {
+        padding: 40px 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -385,7 +491,6 @@
           <button class="mini-btn" id="saveKeyBtn">Guardar</button>
         </div>
         <button class="theme-toggle" id="themeBtn" aria-label="Cambiar tema">
-          <!-- ícono se rellena por JS según tema -->
           <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="4"></circle>
             <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
@@ -409,8 +514,8 @@
           <div class="compare" id="compare">
             <span class="label left">Antes</span>
             <span class="label right">Después</span>
-            <img id="imgBefore" class="before" alt="Antes" src="images/before.jpg" />
-            <img id="imgAfter" class="after" alt="Después" src="images/after.jpg" />
+            <img id="imgBefore" class="before" alt="Antes" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iSW50ZXIsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM2YjczODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlbiBkZSBlamVtcGxvPC90ZXh0Pgo8L3N2Zz4=" />
+            <img id="imgAfter" class="after" alt="Después" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjZWZmNmZmIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTUwIiBmb250LWZhbWlseT0iSW50ZXIsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiM4YjVjZjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkltYWdlbiByZXN0YXVyYWRhPC90ZXh0Pgo8L3N2Zz4=" />
             <div class="slider-wrap">
               <div class="drag-line" id="dragLine"></div>
               <div class="handle" id="handle"></div>
@@ -418,7 +523,6 @@
             </div>
           </div>
           <div class="controls">
-            <button id="resetExample" class="mini-btn ghost">Restaurar ejemplo</button>
             <span class="helper">El comparador mostrará aquí tu resultado.</span>
             <button id="downloadBtn" class="btn download-btn" style="display:none">Descargar resultado</button>
           </div>
@@ -427,17 +531,25 @@
         <!-- Uploader + Acciones -->
         <div class="card">
           <div id="drop" class="drop">
-            <div>
+            <div id="drop-text">
               <div style="font-weight:700;font-size:18px;margin-bottom:6px">Arrastra la imagen aquí o haz clic para cargar</div>
               <div class="hint">JPG, PNG o WEBP. También puedes pegar una imagen.</div>
             </div>
-
+            
+            <img id="imagePreview" class="image-preview" alt="Vista previa" />
+            
             <input id="fileInput" type="file" accept="image/*" style="display:none" />
             
+            <div class="progress-bar" id="progressBar">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
             <div class="controls">
-              <button id="chooseBtn" class="mini-btn">Elegir imagen</button>
-              <button id="runBtn" class="btn">Restaurar Foto Ahora</button>
+              <button id="chooseBtn" class="btn">Elegir imagen</button>
+              <button id="runBtn" class="btn" style="display:none">Restaurar Foto Ahora</button>
+              <button id="removeBtn" class="mini-btn ghost" style="display:none">Quitar imagen</button>
               <span id="status" class="helper"></span>
+              <div id="errorMessage" class="error-message"></div>
             </div>
           </div>
         </div>
@@ -448,11 +560,11 @@
     <section class="section">
       <div class="container alt">
         <div class="img">
-          <img src="images/before.jpg" alt="">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjZjNmNGY2Ii8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTQwIiBmb250LWZhbWlseT0iSW50ZXIsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2YjczODAiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZvdG8gYW50aWd1YTwvdGV4dD4KPHRleHQgeD0iMjAwIiB5PSIxNjAiIGZvbnQtZmFtaWx5PSJJbnRlciwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzZiNzM4MCIgdGV4dC1hbmNob3I9Im1pZGRsZSI+KGJvcnJvc2EpPC90ZXh0Pgo8L3N2Zz4=" alt="">
         </div>
         <div class="text">
           <h2>Reparar fotos antiguas borrosas al instante con el restaurador de fotos antiguas AI</h2>
-          <p>Restaurar foto en Photoshop requiere mucho tiempo y habilidades técnicas. Con el restaurador de fotos antiguas AI de Fotor, todo el proceso de restauración de fotos antiguas se completa en segundos. Puedes arreglar la borrosidad y mejorar calidad de fotos viejas con unos pocos clics en nuestra herramienta de restauración de fotos antiguas AI, sin necesidad de edición. Simplemente, carga tu foto y deja el resto en nuestras manos, obtendrás una foto de alta calidad en segundos. ¡Prueba Fotor ahora y haz que tus fotos sean más claras!</p>
+          <p>Restaurar foto en Photoshop requiere mucho tiempo y habilidades técnicas. Con el restaurador de fotos antiguas AI, todo el proceso de restauración se completa en segundos. Puedes arreglar la borrosidad y mejorar calidad de fotos viejas con unos pocos clics en nuestra herramienta de restauración de fotos antiguas AI, sin necesidad de edición. Simplemente, carga tu foto y deja el resto en nuestras manos, obtendrás una foto de alta calidad en segundos.</p>
           <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Restaurar foto ahora</button>
         </div>
       </div>
@@ -461,11 +573,11 @@
     <section class="section">
       <div class="container alt" style="direction:rtl">
         <div class="img" style="direction:ltr">
-          <img src="images/after.jpg" alt="">
+          <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSIjZWZmNmZmIi8+Cjx0ZXh0IHg9IjIwMCIgeT0iMTQwIiBmb250LWZhbWlseT0iSW50ZXIsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM4YjVjZjYiIHRleHQtYW5jaG9yPSJtaWRkbGUiPkZvdG8gcmVzdGF1cmFkYTwvdGV4dD4KPHRleHQgeD0iMjAwIiB5PSIxNjAiIGZvbnQtZmFtaWx5PSJJbnRlciwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzhiNWNmNiIgdGV4dC1hbmNob3I9Im1pZGRsZSI+KG1lam9yYWRhKTwvdGV4dD4KPC9zdmc+" alt="">
         </div>
         <div class="text" style="direction:ltr">
           <h2>Revivir tus recuerdos especiales con la restauración de fotos antiguas AI</h2>
-          <p>Cada foto es tan valiosa como los recuerdos que captura. Con la tecnología avanzada de restauración de fotos antiguas de Fotor, puedes revivir tus preciosos recuerdos capturados en momentos especiales. Usa el restaurador de fotos antiguas AI para restaurar foto antigua online y mejorar tu calidad sin necesidad de habilidades. Además, el removedor de objetos de Fotor puede ayudarte a eliminar manchas y rasguños de fotos antiguas para restaurar foto rayada efectivamente. Obtén fotos de alta resolución instantáneamente para más historias familiares.</p>
+          <p>Cada foto es tan valiosa como los recuerdos que captura. Con la tecnología avanzada de restauración de fotos antiguas, puedes revivir tus preciosos recuerdos capturados en momentos especiales. Usa el restaurador de fotos antiguas AI para restaurar foto antigua online y mejorar tu calidad sin necesidad de habilidades. Obtén fotos de alta resolución instantáneamente para más historias familiares.</p>
           <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Restaurar foto ahora</button>
         </div>
       </div>
@@ -527,30 +639,47 @@
       toast('API Key guardada en este navegador');
     });
 
-    // ============ Uploader y ejemplo ============ 
+    // ============ Uploader y elementos ============ 
     const fileInput = $('#fileInput');
     const drop = $('#drop');
+    const dropText = $('#drop-text');
     const chooseBtn = $('#chooseBtn');
     const runBtn = $('#runBtn');
+    const removeBtn = $('#removeBtn');
     const statusEl = $('#status');
+    const errorMessage = $('#errorMessage');
     const imgBefore = $('#imgBefore');
     const downloadBtn = $('#downloadBtn');
-    const resetExample = $('#resetExample');
+    const imagePreview = $('#imagePreview');
+    const progressBar = $('#progressBar');
+    const progressFill = $('#progressFill');
 
-    const exampleBefore = "images/example.jpg";
-    const exampleAfter  = "images/example.jpg";
-    resetExample.addEventListener('click', ()=> {
-      imgBefore.src = exampleBefore;
-      imgAfter.src  = exampleAfter;
-      downloadBtn.style.display = 'none';
-      setCompare(50);
-      toast('Ejemplo restablecido');
-    });
+    let currentBeforeDataUrl = null;
+    let currentBeforeMime = null;
 
+    // ============ Event Listeners ============
     chooseBtn.addEventListener('click', ()=>fileInput.click());
     drop.addEventListener('click', e=> {
       if(e.target.closest('.controls')) return;
       fileInput.click();
+    });
+
+    // Función para quitar la imagen
+    removeBtn.addEventListener('click', () => {
+      imagePreview.style.display = 'none';
+      imagePreview.src = '';
+      dropText.style.display = 'block';
+      chooseBtn.style.display = 'inline-block';
+      runBtn.style.display = 'none';
+      removeBtn.style.display = 'none';
+      downloadBtn.style.display = 'none';
+      progressBar.style.display = 'none';
+      statusEl.textContent = '';
+      errorMessage.style.display = 'none';
+      currentBeforeDataUrl = null;
+      currentBeforeMime = null;
+      setCompare(50);
+      toast('Imagen eliminada');
     });
 
     // Drag & drop
@@ -560,6 +689,7 @@
       const f = e.dataTransfer.files && e.dataTransfer.files[0];
       if(f) handleFile(f);
     });
+    
     // Paste
     document.addEventListener('paste', e=> {
       const items = e.clipboardData?.items;
@@ -570,153 +700,284 @@
         }
       }
     });
+    
     fileInput.addEventListener('change', e=> {
       const f = e.target.files[0]; if(f) handleFile(f);
     });
 
-    let currentBeforeDataUrl = null;
-    let currentBeforeMime = null;
-
+    // ============ Manejo de archivos ============
     function handleFile(file){
-      if(!file || !file.type.startsWith('image/')){ toast('Selecciona un archivo de imagen válido'); return; }
+      if(!file || !file.type.startsWith('image/')){ 
+        showError('Selecciona un archivo de imagen válido (JPG, PNG, WEBP)'); 
+        return; 
+      }
+      
+      // Validar tamaño (máximo 10MB)
+      if(file.size > 10 * 1024 * 1024) {
+        showError('La imagen es demasiado grande. Máximo 10MB.');
+        return;
+      }
+      
+      hideError();
       const reader = new FileReader();
       reader.onload = e=> {
         currentBeforeDataUrl = e.target.result;
         currentBeforeMime = file.type;
         imgBefore.src = currentBeforeDataUrl;
+        
+        // Mostrar vista previa
+        imagePreview.src = currentBeforeDataUrl;
+        imagePreview.style.display = 'block';
+        dropText.style.display = 'none';
+        
+        // Cambiar visibilidad de botones
+        chooseBtn.style.display = 'none';
+        runBtn.style.display = 'inline-block';
+        removeBtn.style.display = 'inline-block';
+        
         setCompare(50);
         downloadBtn.style.display = 'none';
+        statusEl.textContent = 'Imagen cargada. Haz clic en "Restaurar" para procesar.';
       };
       reader.readAsDataURL(file);
     }
 
-    // ========= Llamada a Gemini (streamGenerateContent) =========
-    async function restoreWithGemini({apiKey, imageDataUrl, mimeType, prompt}){
+    function showError(message) {
+      errorMessage.textContent = message;
+      errorMessage.style.display = 'block';
+      toast(message);
+    }
+
+    function hideError() {
+      errorMessage.style.display = 'none';
+    }
+
+    function updateProgress(percent) {
+      progressFill.style.width = `${percent}%`;
+      if (percent > 0) {
+        progressBar.style.display = 'block';
+      } else {
+        progressBar.style.display = 'none';
+      }
+    }
+
+    // ========= Función mejorada para llamar a Gemini =========
+    async function restoreWithGemini({apiKey, imageDataUrl, mimeType}) {
+      // Validar entrada
+      if (!apiKey) throw new Error('API Key requerida');
+      if (!imageDataUrl) throw new Error('Imagen requerida');
+      
       // Convierte DataURL -> base64 puro
       const base64 = imageDataUrl.split(',')[1];
-      const sysPrompt = "Using the provided image, change only the [specific element] to [new element/description]. Keep everything else in the image exactly the same, preserving the original style, lighting, and composition.";
+      if (!base64) throw new Error('Formato de imagen inválido');
+
+      // Prompt mejorado para restauración de fotos
+      const prompt = `Analyze this old or damaged photograph and restore it by:
+1. Enhancing clarity and sharpness
+2. Reducing noise and grain
+3. Fixing scratches, tears, or damage
+4. Improving contrast and brightness
+5. Preserving the original composition and style
+6. If the photo is black and white, you may add natural colors
+
+Please provide a high-quality restored version of this photograph while maintaining its historical authenticity.`;
 
       const payload = {
         contents: [
           {
             role: "user",
             parts: [
-              { text: sysPrompt },
-              { inlineData: { mimeType: mimeType || "image/*", data: base64 } }
+              { text: prompt },
+              { 
+                inlineData: { 
+                  mimeType: mimeType || "image/jpeg", 
+                  data: base64 
+                } 
+              }
             ]
           }
         ],
         generationConfig: {
-          responseModalities: ["IMAGE","TEXT"]
+          responseModalities: ["IMAGE"],
+          maxOutputTokens: 2048,
+          temperature: 0.1
         }
       };
 
-      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:streamGenerateContent?key=${encodeURIComponent(apiKey)}`;
-      const res = await fetch(url, {
+      // Usar endpoint no-streaming para mayor compatibilidad
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:generateContent?key=${encodeURIComponent(apiKey)}`;
+      
+      const response = await fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
         body: JSON.stringify(payload)
       });
-      if(!res.ok){
-        const t = await res.text();
-        throw new Error(`Error HTTP ${res.status}: ${t}`);
-      }
 
-      // Parse de streaming SSE (líneas "data: ...")
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder("utf-8");
-      let buffer = "";
-      let bestDataUrl = null;
-      let textExplanation = "";
-
-      function findInline(obj){
-        let found = [];
-        if(obj && typeof obj === 'object'){
-          if(obj.inlineData?.data && obj.inlineData?.mimeType){
-            found.push(obj.inlineData);
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = `Error HTTP ${response.status}`;
+        
+        try {
+          const errorJson = JSON.parse(errorText);
+          if (errorJson.error?.message) {
+            errorMessage = errorJson.error.message;
           }
-          for(const k in obj){ found = found.concat(findInline(obj[k])); }
+        } catch (e) {
+          // Si no se puede parsear el JSON, usar el texto tal como está
+          errorMessage = errorText || errorMessage;
         }
-        return found;
+        
+        throw new Error(errorMessage);
       }
 
-      while(true){
-        const { value, done } = await reader.read();
-        if(done) break;
-        buffer += decoder.decode(value, {stream:true});
-        const events = buffer.split('\n\n');
-        buffer = events.pop(); // conserva fragmento incompleto
-
-        for(const ev of events){
-          const lines = ev.split('\n');
-          for(const line of lines){
-            if(!line.startsWith('data:')) continue;
-            const json = line.slice(5).trim();
-            if(json === "[DONE]") continue;
-            try{
-              const obj = JSON.parse(json);
-              // Extrae posibles textos informativos
-              const textParts = (obj?.candidates?.[0]?.content?.parts || []).filter(p=>p.text).map(p=>p.text).join(' ');
-              if(textParts) textExplanation += textParts + " ";
-              // Busca imágenes en cualquier parte del evento
-              const found = findInline(obj);
-              for(const it of found){
-                bestDataUrl = `data:${it.mimeType};base64,${it.data}`;
-              }
-            }catch(e){/* ignora fragmentos inválidos */}
-          }
+      const data = await response.json();
+      
+      // Buscar imagen en la respuesta
+      function findImage(obj) {
+        if (!obj || typeof obj !== 'object') return null;
+        
+        if (obj.inlineData?.data && obj.inlineData?.mimeType) {
+          return `data:${obj.inlineData.mimeType};base64,${obj.inlineData.data}`;
         }
+        
+        for (const key in obj) {
+          const result = findImage(obj[key]);
+          if (result) return result;
+        }
+        
+        return null;
       }
 
-      if(!bestDataUrl) throw new Error("La API no devolvió ninguna imagen.");
-      return { dataUrl: bestDataUrl, text: textExplanation.trim() };
+      const restoredImageUrl = findImage(data);
+      if (!restoredImageUrl) {
+        console.error('Respuesta completa:', JSON.stringify(data, null, 2));
+        throw new Error('La API no devolvió ninguna imagen. Verifica tu API key y que el modelo esté disponible.');
+      }
+
+      return { dataUrl: restoredImageUrl };
     }
 
     // ========= Ejecutar restauración =========
     runBtn.addEventListener('click', async ()=> {
       const apiKey = (apiKeyInput.value || localStorage.getItem('GEMINI_API_KEY') || '').trim();
-      if(!apiKey){ toast('Introduce tu GEMINI_API_KEY y pulsa Guardar.'); return; }
-
-      // Si el usuario no subió nada, usamos lo visible en "Antes".
-      let beforeUrl = currentBeforeDataUrl || imgBefore.src;
-      let mime = currentBeforeMime || (beforeUrl.startsWith('data:') ? beforeUrl.split(';')[0].replace('data:','') : 'image/jpeg');
-
-      // Si no es dataURL, conviértelo a dataURL
-      if(!beforeUrl.startsWith('data:')){
-        statusEl.textContent = 'Descargando imagen de ejemplo...';
-        const blob = await (await fetch(beforeUrl, {mode:'cors'})).blob();
-        mime = blob.type || mime;
-        beforeUrl = await new Promise(res=> {
-          const r = new FileReader(); r.onload = e=>res(e.target.result); r.readAsDataURL(blob);
-        });
+      if(!apiKey){ 
+        showError('Introduce tu GEMINI_API_KEY y pulsa Guardar.'); 
+        return; 
       }
 
-      try{
-        runBtn.disabled = true; runBtn.textContent = 'Restaurando...';
-        statusEl.textContent = 'Procesando con Gemini (stream)...';
-        const {dataUrl, text} = await restoreWithGemini({apiKey, imageDataUrl: beforeUrl, mimeType: mime, prompt: ""});
-        imgAfter.src = dataUrl;
+      if (!currentBeforeDataUrl) {
+        showError('Por favor, carga una imagen primero.');
+        return;
+      }
+
+      try {
+        hideError();
+        runBtn.disabled = true;
+        runBtn.textContent = 'Restaurando...';
+        statusEl.textContent = 'Preparando imagen...';
+        updateProgress(10);
+
+        // Simular progreso
+        setTimeout(() => {
+          statusEl.textContent = 'Enviando a Gemini AI...';
+          updateProgress(30);
+        }, 500);
+
+        setTimeout(() => {
+          statusEl.textContent = 'Procesando con IA...';
+          updateProgress(60);
+        }, 1000);
+
+        const result = await restoreWithGemini({
+          apiKey, 
+          imageDataUrl: currentBeforeDataUrl, 
+          mimeType: currentBeforeMime
+        });
+
+        updateProgress(90);
+        statusEl.textContent = 'Aplicando resultado...';
+
+        imgAfter.src = result.dataUrl;
         setCompare(50);
         downloadBtn.style.display = 'inline-flex';
-        statusEl.textContent = text ? ('Listo. ' + text) : 'Listo. Puedes mover el deslizador o descargar.';
-        toast('Restauración completada ✅');
-      }catch(err){
-        console.error(err);
-        statusEl.textContent = 'Error: ' + (err?.message || err);
-        toast('Error al restaurar. Revisa la consola.');
-      }finally{
-        runBtn.disabled = false; runBtn.textContent = 'Restaurar Foto Ahora';
+        
+        updateProgress(100);
+        statusEl.textContent = 'Restauración completada. Usa el deslizador para comparar o descarga el resultado.';
+        toast('¡Foto restaurada exitosamente! ✅');
+        
+        // Ocultar barra de progreso después de 2 segundos
+        setTimeout(() => updateProgress(0), 2000);
+
+      } catch(err) {
+        console.error('Error en restauración:', err);
+        updateProgress(0);
+        
+        let errorMsg = err?.message || 'Error desconocido';
+        
+        // Mejorar mensajes de error comunes
+        if (errorMsg.includes('API_KEY_INVALID')) {
+          errorMsg = 'API Key inválida. Verifica que sea correcta.';
+        } else if (errorMsg.includes('PERMISSION_DENIED')) {
+          errorMsg = 'Permisos denegados. Verifica tu API Key y cuota.';
+        } else if (errorMsg.includes('QUOTA_EXCEEDED')) {
+          errorMsg = 'Cuota excedida. Espera un momento o verifica tu plan.';
+        } else if (errorMsg.includes('MODEL_NOT_FOUND')) {
+          errorMsg = 'Modelo no disponible. El servicio puede estar temporalmente inactivo.';
+        }
+        
+        showError(errorMsg);
+        statusEl.textContent = '';
+        
+      } finally {
+        runBtn.disabled = false;
+        runBtn.textContent = 'Restaurar Foto Ahora';
       }
     });
 
-    // Descargar resultado
-    downloadBtn.addEventListener('click', ()=> {
-      const url = imgAfter.src;
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'foto-restaurada.png';
-      document.body.appendChild(a); 
-      a.click(); a.remove();
+    // ========= Descargar resultado =========
+    downloadBtn.addEventListener('click', async ()=> {
+      try {
+        const url = imgAfter.src;
+        if (!url || url.includes('data:image/svg+xml')) {
+          toast('No hay imagen restaurada para descargar');
+          return;
+        }
+        
+        // Si es data URL, crear blob para descarga
+        if (url.startsWith('data:')) {
+          const response = await fetch(url);
+          const blob = await response.blob();
+          const objectUrl = URL.createObjectURL(blob);
+          
+          const a = document.createElement('a');
+          a.href = objectUrl;
+          a.download = `foto-restaurada-${Date.now()}.png`;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          
+          // Liberar memoria
+          setTimeout(() => URL.revokeObjectURL(objectUrl), 100);
+        } else {
+          // Para URLs normales
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `foto-restaurada-${Date.now()}.png`;
+          a.target = '_blank';
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+        }
+        
+        toast('Descarga iniciada ⬇️');
+        
+      } catch (err) {
+        console.error('Error al descargar:', err);
+        toast('Error al descargar la imagen');
+      }
     });
   </script>
 </body>
