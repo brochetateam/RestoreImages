@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Restauración de fotos antiguas AI online</title>
+  <meta name="description" content="Restaura fotos antiguas en segundos con IA. Sube tu imagen y obtén una versión mejorada al instante." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#ffffff;
+      --text:#0f172a;
+      --muted:#596377;
+      --card:#f6f7fb;
+      --border:#e5e7eb;
+      --accent:#4f46e5;
+      --accent-2:#06b6d4;
+      --shadow:0 10px 30px rgba(2,6,23,.08);
+    }
+    body.dark{
+      --bg:#0b1220;
+      --text:#e6eaf3;
+      --muted:#9aa4b2;
+      --card:#0f172a;
+      --border:#1f2937;
+      --shadow:0 10px 30px rgba(0,0,0,.45);
+    }
+    *{
+      box-sizing:border-box
+    }
+    body{
+      margin:0;
+      background:var(--bg);
+      color:var(--text);
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      line-height:1.55;
+    }
+    a{
+      color:inherit;
+      text-decoration:none
+    }
+    .container{
+      max-width:1200px;
+      margin:0 auto;
+      padding:0 20px
+    }
+    header{
+      position:sticky;
+      top:0;
+      z-index:50;
+      backdrop-filter:saturate(140%) blur(6px);
+      background:color-mix(in srgb, var(--bg) 92%, transparent);
+      border-bottom:1px solid var(--border);
+    }
+    .nav{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      height:64px;
+      gap:16px;
+    }
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:800;
+      font-size:18px
+    }
+    .brand .dot{
+      width:12px;
+      height:12px;
+      border-radius:50%;
+      background:linear-gradient(135deg,#7c3aed,#06b6d4)
+    }
+    .right{
+      display:flex;
+      align-items:center;
+      gap:10px
+    }
+    .apikey{
+      display:flex;
+      align-items:center;
+      gap:8px;
+      padding:6px 8px;
+      border:1px solid var(--border);
+      border-radius:10px;
+      background:var(--card)
+    }
+    .apikey input{
+      border:none;
+      background:transparent;
+      outline:none;
+      color:var(--text);
+      width:220px
+    }
+    .mini-btn{
+      border:1px solid var(--border);
+      background:var(--bg);
+      color:var(--text);
+      padding:6px 10px;
+      border-radius:10px;
+      cursor:pointer
+    }
+    .theme-toggle{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:38px;
+      height:38px;
+      border-radius:10px;
+      border:1px solid var(--border);
+      background:var(--bg);
+      cursor:pointer
+    }
+    body.dark .theme-toggle { background: var(--card); }
+    .theme-toggle svg{
+      width:18px;
+      height:18px
+    }
+    /* hero */
+    .hero{
+      padding:56px 0 28px
+    }
+    .hero h1{
+      font-size:44px;
+      line-height:1.05;
+      margin:0 0 8px;
+      font-weight:800;
+      letter-spacing:-0.02em;
+      text-wrap:balance;
+      text-align:center
+    }
+    .hero p{
+      color:var(--muted);
+      text-align:center;
+      margin:0 0 26px
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1.1fr 1fr;
+      gap:28px;
+      align-items:stretch
+    }
+    @media (max-width:980px){
+      .grid{
+        grid-template-columns:1fr
+      }
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      box-shadow:var(--shadow);
+      padding:16px;
+      height:100%
+    }
+    /* Before/after compare */
+    .compare{
+      position:relative;
+      overflow:hidden;
+      border-radius:12px;
+      height:460px;
+      background:#000
+    }
+    .compare img{
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      user-select:none;
+      pointer-events:none
+    }
+    .compare .after{
+      clip-path: inset(0 0 0 50%)
+    }
+    .compare .labels{
+      position:absolute;
+      inset:10px 10px auto auto;
+      display:flex;
+      gap:10px;
+      z-index:3
+    }
+    .label{
+      font-size:12px;
+      padding:6px 10px;
+      border-radius:999px;
+      background:rgba(0,0,0,.55);
+      color:#fff
+    }
+    .label.left{
+      position:absolute;
+      left:10px;
+      top:10px
+    }
+    .label.right{
+      position:absolute;
+      right:10px;
+      top:10px
+    }
+    .slider-wrap{
+      position:absolute;
+      inset:0;
+      z-index:4
+    }
+    .drag-line{
+      position:absolute;
+      top:0;
+      bottom:0;
+      left:50%;
+      width:2px;
+      background:#fff;
+      box-shadow:0 0 0 1px rgba(0,0,0,.25)
+    }
+    .handle{
+      position:absolute;
+      top:50%;
+      left:50%;
+      transform:translate(-50%,-50%);
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      background:#fff;
+      color:#111;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      box-shadow:0 4px 16px rgba(0,0,0,.35);
+      border:2px solid #fff
+    }
+    .handle::before,.handle::after{
+      content:"";
+      display:block;
+      width:9px;
+      height:9px;
+      border-top:2px solid #111;
+      border-right:2px solid #111;
+      transform:rotate(45deg)
+    }
+    .handle::after{
+      transform:rotate(-135deg)
+    }
+    .range{
+      position:absolute;
+      inset:0;
+      opacity:0
+    }
+    .controls{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      margin-top:12px;
+      align-items:center
+    }
+    .btn{
+      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      color:#fff;
+      border:none;
+      padding:12px 18px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:700
+    }
+    .btn[disabled]{
+      opacity:.6;
+      cursor:not-allowed
+    }
+    .ghost{
+      background:transparent;
+      border:1px dashed var(--border);
+      color:var(--text)
+    }
+    .download-btn{
+      margin-left:auto
+    }
+    /* Uploader */
+    .drop{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      justify-content:center;
+      align-items:center;
+      min-height:460px;
+      border:2px dashed var(--border);
+      border-radius:12px;
+      background:color-mix(in srgb,var(--card) 85%, transparent);
+      text-align:center;
+      padding:16px
+    }
+    .drop.dragover{
+      border-color:var(--accent-2);
+      background:color-mix(in srgb,var(--card) 70%, transparent)
+    }
+    .drop .hint{
+      color:var(--muted)
+    }
+    .helper{
+      font-size:12px;
+      color:var(--muted)
+    }
+    /* Sections alternas */
+    .section{
+      padding:56px 0
+    }
+    .alt{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:26px;
+      align-items:center
+    }
+    .alt .img{
+      border-radius:14px;
+      overflow:hidden;
+      border:1px solid var(--border);
+      box-shadow:var(--shadow)
+    }
+    .alt .img img{
+      width:100%;
+      height:100%;
+      object-fit:cover
+    }
+    .alt .text h2{
+      margin:0 0 10px;
+      font-size:28px
+    }
+    .alt .text p{
+      margin:0 0 14px;
+      color:var(--muted)
+    }
+    @media (max-width:980px){
+      .alt{
+        grid-template-columns:1fr
+      }
+    }
+    /* Footer */
+    footer{
+      border-top:1px solid var(--border);
+      padding:26px 0;
+      color:var(--muted);
+      font-size:14px
+    }
+    .toast{
+      position:fixed;
+      bottom:18px;
+      left:50%;
+      transform:translateX(-50%);
+      background:var(--card);
+      border:1px solid var(--border);
+      padding:10px 12px;
+      border-radius:10px;
+      box-shadow:var(--shadow);
+      display:none
+    }
+    .toast.show{
+      display:block
+    }
+    .sr-only{
+      position:absolute;
+      width:1px;
+      height:1px;
+      padding:0;
+      margin:-1px;
+      overflow:hidden;
+      clip:rect(0,0,0,0);
+      white-space:nowrap;
+      border:0
+    }
+  </style>
+</head>
+<body>
+  <a id="top" class="sr-only">top</a>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <span class="dot"></span>
+        <span>FotoRestaurador AI</span>
+      </div>
+      <div class="right">
+        <div class="apikey" title="Tu clave se guarda en localStorage">
+          <span style="font-size:12px;color:var(--muted)">API Key:</span>
+          <input id="apiKeyInput" type="password" placeholder="GEMINI_API_KEY" />
+          <button class="mini-btn" id="saveKeyBtn">Guardar</button>
+        </div>
+        <button class="theme-toggle" id="themeBtn" aria-label="Cambiar tema">
+          <!-- ícono se rellena por JS según tema -->
+          <svg id="iconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg id="iconMoon" viewBox="0 0 24 24" fill="currentColor" style="display:none">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero container">
+      <h1>Restauración de fotos antiguas AI online</h1>
+      <p>Restaura fotos en línea y dale vida y color a tus recuerdos en segundos.</p>
+
+      <div class="grid">
+        <!-- Comparador Antes/Después -->
+        <div class="card">
+          <div class="compare" id="compare">
+            <span class="label left">Antes</span>
+            <span class="label right">Después</span>
+            <img id="imgBefore" class="before" alt="Antes" src="images/before.jpg" />
+            <img id="imgAfter" class="after" alt="Después" src="images/after.jpg" />
+            <div class="slider-wrap">
+              <div class="drag-line" id="dragLine"></div>
+              <div class="handle" id="handle"></div>
+              <input class="range" id="range" type="range" min="0" max="100" value="50" aria-label="Comparador antes/después" />
+            </div>
+          </div>
+          <div class="controls">
+            <button id="resetExample" class="mini-btn ghost">Restaurar ejemplo</button>
+            <span class="helper">El comparador mostrará aquí tu resultado.</span>
+            <button id="downloadBtn" class="btn download-btn" style="display:none">Descargar resultado</button>
+          </div>
+        </div>
+
+        <!-- Uploader + Acciones -->
+        <div class="card">
+          <div id="drop" class="drop">
+            <div>
+              <div style="font-weight:700;font-size:18px;margin-bottom:6px">Arrastra la imagen aquí o haz clic para cargar</div>
+              <div class="hint">JPG, PNG o WEBP. También puedes pegar una imagen.</div>
+            </div>
+
+            <input id="fileInput" type="file" accept="image/*" style="display:none" />
+            
+            <div class="controls">
+              <button id="chooseBtn" class="mini-btn">Elegir imagen</button>
+              <button id="runBtn" class="btn">Restaurar Foto Ahora</button>
+              <span id="status" class="helper"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Secciones alternas -->
+    <section class="section">
+      <div class="container alt">
+        <div class="img">
+          <img src="images/before.jpg" alt="">
+        </div>
+        <div class="text">
+          <h2>Reparar fotos antiguas borrosas al instante con el restaurador de fotos antiguas AI</h2>
+          <p>Restaurar foto en Photoshop requiere mucho tiempo y habilidades técnicas. Con el restaurador de fotos antiguas AI de Fotor, todo el proceso de restauración de fotos antiguas se completa en segundos. Puedes arreglar la borrosidad y mejorar calidad de fotos viejas con unos pocos clics en nuestra herramienta de restauración de fotos antiguas AI, sin necesidad de edición. Simplemente, carga tu foto y deja el resto en nuestras manos, obtendrás una foto de alta calidad en segundos. ¡Prueba Fotor ahora y haz que tus fotos sean más claras!</p>
+          <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Restaurar foto ahora</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container alt" style="direction:rtl">
+        <div class="img" style="direction:ltr">
+          <img src="images/after.jpg" alt="">
+        </div>
+        <div class="text" style="direction:ltr">
+          <h2>Revivir tus recuerdos especiales con la restauración de fotos antiguas AI</h2>
+          <p>Cada foto es tan valiosa como los recuerdos que captura. Con la tecnología avanzada de restauración de fotos antiguas de Fotor, puedes revivir tus preciosos recuerdos capturados en momentos especiales. Usa el restaurador de fotos antiguas AI para restaurar foto antigua online y mejorar tu calidad sin necesidad de habilidades. Además, el removedor de objetos de Fotor puede ayudarte a eliminar manchas y rasguños de fotos antiguas para restaurar foto rayada efectivamente. Obtén fotos de alta resolución instantáneamente para más historias familiares.</p>
+          <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">Restaurar foto ahora</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      © <span id="year"></span> FotoRestaurador AI · Proyecto demo gratuito. La clave de API se almacena en tu navegador.
+    </div>
+  </footer>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ============ Utilidades UI ============ 
+    const $ = (s, el=document) => el.querySelector(s);
+    const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+    const toast = (msg, ms=3000) => {
+      const el = $('#toast'); el.textContent = msg; el.classList.add('show');
+      setTimeout(()=>el.classList.remove('show'), ms);
+    };
+
+    // ============ Tema claro/oscuro ============ 
+    const themeBtn = $('#themeBtn');
+    const iconSun = $('#iconSun');
+    const iconMoon = $('#iconMoon');
+    function applyTheme(t){
+      if(t==='dark'){ document.body.classList.add('dark'); iconSun.style.display='none'; iconMoon.style.display='block'; }
+      else { document.body.classList.remove('dark'); iconSun.style.display='block'; iconMoon.style.display='none'; }
+      localStorage.setItem('theme', t);
+    }
+    const storedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark':'light');
+    applyTheme(storedTheme);
+    themeBtn.addEventListener('click',()=>applyTheme(document.body.classList.contains('dark')?'light':'dark'));
+
+    // ============ Año footer ============ 
+    $('#year').textContent = new Date().getFullYear();
+
+    // ============ Comparador ============ 
+    const range = $('#range');
+    const imgAfter = $('#imgAfter');
+    const dragLine = $('#dragLine');
+    const handle = $('#handle');
+    function setCompare(val){
+      val = Math.max(0, Math.min(100, Number(val)));
+      imgAfter.style.clipPath = `inset(0 ${100-val}% 0 0)`;
+      dragLine.style.left = handle.style.left = `${val}%`;
+    }
+    setCompare(range.value);
+    range.addEventListener('input', e=>setCompare(e.target.value));
+
+    // ============ API Key ============ 
+    const apiKeyInput = $('#apiKeyInput');
+    const saveKeyBtn = $('#saveKeyBtn');
+    apiKeyInput.value = localStorage.getItem('GEMINI_API_KEY') || '';
+    saveKeyBtn.addEventListener('click', ()=> {
+      localStorage.setItem('GEMINI_API_KEY', apiKeyInput.value.trim());
+      toast('API Key guardada en este navegador');
+    });
+
+    // ============ Uploader y ejemplo ============ 
+    const fileInput = $('#fileInput');
+    const drop = $('#drop');
+    const chooseBtn = $('#chooseBtn');
+    const runBtn = $('#runBtn');
+    const statusEl = $('#status');
+    const imgBefore = $('#imgBefore');
+    const downloadBtn = $('#downloadBtn');
+    const resetExample = $('#resetExample');
+
+    const exampleBefore = "images/example.jpg";
+    const exampleAfter  = "images/example.jpg";
+    resetExample.addEventListener('click', ()=> {
+      imgBefore.src = exampleBefore;
+      imgAfter.src  = exampleAfter;
+      downloadBtn.style.display = 'none';
+      setCompare(50);
+      toast('Ejemplo restablecido');
+    });
+
+    chooseBtn.addEventListener('click', ()=>fileInput.click());
+    drop.addEventListener('click', e=> {
+      if(e.target.closest('.controls')) return;
+      fileInput.click();
+    });
+
+    // Drag & drop
+    ['dragenter','dragover'].forEach(evt=>drop.addEventListener(evt, e=>{e.preventDefault(); e.stopPropagation(); drop.classList.add('dragover');}));
+    ['dragleave','drop'].forEach(evt=>drop.addEventListener(evt, e=>{e.preventDefault(); e.stopPropagation(); drop.classList.remove('dragover');}));
+    drop.addEventListener('drop', e=> {
+      const f = e.dataTransfer.files && e.dataTransfer.files[0];
+      if(f) handleFile(f);
+    });
+    // Paste
+    document.addEventListener('paste', e=> {
+      const items = e.clipboardData?.items;
+      if(!items) return;
+      for(const it of items){
+        if(it.type.startsWith('image/')){
+          const f = it.getAsFile(); if(f) { handleFile(f); break; }
+        }
+      }
+    });
+    fileInput.addEventListener('change', e=> {
+      const f = e.target.files[0]; if(f) handleFile(f);
+    });
+
+    let currentBeforeDataUrl = null;
+    let currentBeforeMime = null;
+
+    function handleFile(file){
+      if(!file || !file.type.startsWith('image/')){ toast('Selecciona un archivo de imagen válido'); return; }
+      const reader = new FileReader();
+      reader.onload = e=> {
+        currentBeforeDataUrl = e.target.result;
+        currentBeforeMime = file.type;
+        imgBefore.src = currentBeforeDataUrl;
+        setCompare(50);
+        downloadBtn.style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ========= Llamada a Gemini (streamGenerateContent) =========
+    async function restoreWithGemini({apiKey, imageDataUrl, mimeType, prompt}){
+      // Convierte DataURL -> base64 puro
+      const base64 = imageDataUrl.split(',')[1];
+      const sysPrompt = "Using the provided image, change only the [specific element] to [new element/description]. Keep everything else in the image exactly the same, preserving the original style, lighting, and composition.";
+
+      const payload = {
+        contents: [
+          {
+            role: "user",
+            parts: [
+              { text: sysPrompt },
+              { inlineData: { mimeType: mimeType || "image/*", data: base64 } }
+            ]
+          }
+        ],
+        generationConfig: {
+          responseModalities: ["IMAGE","TEXT"]
+        }
+      };
+
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image-preview:streamGenerateContent?key=${encodeURIComponent(apiKey)}`;
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      if(!res.ok){
+        const t = await res.text();
+        throw new Error(`Error HTTP ${res.status}: ${t}`);
+      }
+
+      // Parse de streaming SSE (líneas "data: ...")
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder("utf-8");
+      let buffer = "";
+      let bestDataUrl = null;
+      let textExplanation = "";
+
+      function findInline(obj){
+        let found = [];
+        if(obj && typeof obj === 'object'){
+          if(obj.inlineData?.data && obj.inlineData?.mimeType){
+            found.push(obj.inlineData);
+          }
+          for(const k in obj){ found = found.concat(findInline(obj[k])); }
+        }
+        return found;
+      }
+
+      while(true){
+        const { value, done } = await reader.read();
+        if(done) break;
+        buffer += decoder.decode(value, {stream:true});
+        const events = buffer.split('\n\n');
+        buffer = events.pop(); // conserva fragmento incompleto
+
+        for(const ev of events){
+          const lines = ev.split('\n');
+          for(const line of lines){
+            if(!line.startsWith('data:')) continue;
+            const json = line.slice(5).trim();
+            if(json === "[DONE]") continue;
+            try{
+              const obj = JSON.parse(json);
+              // Extrae posibles textos informativos
+              const textParts = (obj?.candidates?.[0]?.content?.parts || []).filter(p=>p.text).map(p=>p.text).join(' ');
+              if(textParts) textExplanation += textParts + " ";
+              // Busca imágenes en cualquier parte del evento
+              const found = findInline(obj);
+              for(const it of found){
+                bestDataUrl = `data:${it.mimeType};base64,${it.data}`;
+              }
+            }catch(e){/* ignora fragmentos inválidos */}
+          }
+        }
+      }
+
+      if(!bestDataUrl) throw new Error("La API no devolvió ninguna imagen.");
+      return { dataUrl: bestDataUrl, text: textExplanation.trim() };
+    }
+
+    // ========= Ejecutar restauración =========
+    runBtn.addEventListener('click', async ()=> {
+      const apiKey = (apiKeyInput.value || localStorage.getItem('GEMINI_API_KEY') || '').trim();
+      if(!apiKey){ toast('Introduce tu GEMINI_API_KEY y pulsa Guardar.'); return; }
+
+      // Si el usuario no subió nada, usamos lo visible en "Antes".
+      let beforeUrl = currentBeforeDataUrl || imgBefore.src;
+      let mime = currentBeforeMime || (beforeUrl.startsWith('data:') ? beforeUrl.split(';')[0].replace('data:','') : 'image/jpeg');
+
+      // Si no es dataURL, conviértelo a dataURL
+      if(!beforeUrl.startsWith('data:')){
+        statusEl.textContent = 'Descargando imagen de ejemplo...';
+        const blob = await (await fetch(beforeUrl, {mode:'cors'})).blob();
+        mime = blob.type || mime;
+        beforeUrl = await new Promise(res=> {
+          const r = new FileReader(); r.onload = e=>res(e.target.result); r.readAsDataURL(blob);
+        });
+      }
+
+      try{
+        runBtn.disabled = true; runBtn.textContent = 'Restaurando...';
+        statusEl.textContent = 'Procesando con Gemini (stream)...';
+        const {dataUrl, text} = await restoreWithGemini({apiKey, imageDataUrl: beforeUrl, mimeType: mime, prompt: ""});
+        imgAfter.src = dataUrl;
+        setCompare(50);
+        downloadBtn.style.display = 'inline-flex';
+        statusEl.textContent = text ? ('Listo. ' + text) : 'Listo. Puedes mover el deslizador o descargar.';
+        toast('Restauración completada ✅');
+      }catch(err){
+        console.error(err);
+        statusEl.textContent = 'Error: ' + (err?.message || err);
+        toast('Error al restaurar. Revisa la consola.');
+      }finally{
+        runBtn.disabled = false; runBtn.textContent = 'Restaurar Foto Ahora';
+      }
+    });
+
+    // Descargar resultado
+    downloadBtn.addEventListener('click', ()=> {
+      const url = imgAfter.src;
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'foto-restaurada.png';
+      document.body.appendChild(a); 
+      a.click(); a.remove();
+    });
+  </script>
+</body>
+</html>
